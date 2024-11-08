@@ -1,3 +1,2 @@
-import math 
-a = 1+1
-print(a)
+import pygame
+import math
