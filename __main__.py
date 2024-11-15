@@ -1,3 +1,4 @@
-import math 
-a = 1+1
-print(a)
+def main():
+    print("main")
+if "__name__" == "__main__":
+    main()
