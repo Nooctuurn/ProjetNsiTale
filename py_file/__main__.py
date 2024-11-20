@@ -1,4 +1,5 @@
 from game import*
+from player import*
 
 def main():
     print("main")
