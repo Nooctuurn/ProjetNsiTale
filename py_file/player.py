@@ -2,12 +2,23 @@ import pygame
 import sys
 from pygame.locals import*
 from random import randint
+
 pygame.init()
 largeur, hauteur = 1200, 600
+
+sprite_sheet_RUN = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\RUN.png")
+RUN_frame_width = sprite_sheet_RUN.get_width() // 8
+RUN_frame_height = sprite_sheet_RUN.get_height()
+
+sprite_sheet_IDLE = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\IDLE.png")
+IDLE_frame_width = sprite_sheet_IDLE.get_width() // 8
+IDLE_frame_height = sprite_sheet_IDLE.get_height()
+STAY_frame = sprite_sheet_IDLE.subsurface(pygame.Rect(0, 0, IDLE_frame_width, IDLE_frame_height))
+
 class Player(pygame.sprite.Sprite): # Classe qui gère le joueur et l'ensemble du jeu
-    player = pygame.image.load('img/perso.png')
-    player.set_colorkey((255, 255, 255))
-    pl = pygame.transform.scale(player, (80, 60))
+    player = STAY_frame
+    #player.set_colorkey((255, 255, 255))
+    pl = pygame.transform.scale(player, (200, 200))
 
     def __init__(self, x, y, velocity_x, velocity_y):
         super().__init__()
