@@ -3,9 +3,9 @@ import sys
 from pygame.locals import*
 from random import randint
 pygame.init()
-
+largeur, hauteur = 1200, 600
 class Player(pygame.sprite.Sprite): # Classe qui gère le joueur et l'ensemble du jeu
-    player = pygame.image.load('perso.png')
+    player = pygame.image.load('img/perso.png')
     player.set_colorkey((255, 255, 255))
     pl = pygame.transform.scale(player, (80, 60))
 
@@ -22,14 +22,14 @@ class Player(pygame.sprite.Sprite): # Classe qui gère le joueur et l'ensemble d
         self.position[0] += self.velocity[0]
         self.position[1] += self.velocity[1]
 
-        if self.position[0] < 0: # Vérifie si la position x est en dehors des limites à gauche
-            self.position[0] = 0
-        elif self.position[0] + self.rect.width > 900: # Vérifie si la position x est en dehors des limites à droite
-            self.position[0] = 900 - self.rect.width
-        elif self.position[1] + self.rect.height < 320: # Vérifie si la position y est en dehors des limites en haut
-            self.position[1] = 320 - self.rect.height
-        elif self.position[1] + self.rect.height > 410: # Vérifie si la position y est en dehors des limites en bas
-            self.position[1] = 410 - self.rect.height
+        if self.position[0] < -30: # Vérifie si la position x est en dehors des limites à gauche
+            self.position[0] = -30
+        elif self.position[0] + self.rect.width > largeur +20: # Vérifie si la position x est en dehors des limites à droite
+            self.position[0] = largeur - self.rect.width
+        elif self.position[1] + self.rect.height < 50: # Vérifie si la position y est en dehors des limites en haut
+            self.position[1] = 50 - self.rect.height
+        elif self.position[1] + self.rect.height > hauteur: # Vérifie si la position y est en dehors des limites en bas
+            self.position[1] = hauteur - self.rect.height
         
         self.rect.topleft = self.position # Met à jour la position du rectangle englobant
 
@@ -37,16 +37,16 @@ class Player(pygame.sprite.Sprite): # Classe qui gère le joueur et l'ensemble d
        surface.blit(self.image, self.rect.topleft)
 
     def move_left(self): # Déplace le joueur vers la gauche en définissant la vélocité x à -1 et y à 0
-        self.velocity[0] = -1
+        self.velocity[0] = -3
         self.velocity[1] = 0
     def move_right(self): # Déplace le joueur vers la droite en définissant la vélocité x à 1 et y à 0
-        self.velocity[0] = 1
+        self.velocity[0] = 3
         self.velocity[1] = 0
     def move_up(self): # Déplace le joueur vers le haut en définissant la vélocité y à -1 et x à 0
-        self.velocity[1] = -1
+        self.velocity[1] = -3
         self.velocity[0] = 0
     def move_down(self): # Dplace le joueur vers le bas en définissant la vélocité y à 1 et x à 0
-        self.velocity[1] = 1
+        self.velocity[1] = 3
         self.velocity[0] = 0
     def stop(self): # Arrête le mouvement du joueur en définissant les vélocités x et y à 0
         self.velocity[0] = 0
