@@ -1,0 +1,53 @@
+import pygame
+import sys
+from pygame.locals import*
+from random import randint
+pygame.init()
+
+class Player(pygame.sprite.Sprite): # Classe qui gère le joueur et l'ensemble du jeu
+    player = pygame.image.load('perso.png')
+    player.set_colorkey((255, 255, 255))
+    pl = pygame.transform.scale(player, (80, 60))
+
+    def __init__(self, x, y, velocity_x, velocity_y):
+        super().__init__()
+        self.position = [x, y] # Initialise la position du joueur avec les coordonnées x et y
+        self.velocity = [velocity_x, velocity_y] # Initialise la vélocité du joueur avec velocity_x et velocity_y 
+        self.image = Player.pl # Charge l'image du joueur
+        self.rect = self.image.get_rect()  # Obtient le rectangle englobant de l'image pour la gestion des collisions
+        self.rect.topleft = self.position # Place le coin supérieur gauche du rectangle à la position initiale
+
+    def update(self):
+        # Met à jour la position en ajoutant la vélocité actuelle
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
+
+        if self.position[0] < 0: # Vérifie si la position x est en dehors des limites à gauche
+            self.position[0] = 0
+        elif self.position[0] + self.rect.width > 900: # Vérifie si la position x est en dehors des limites à droite
+            self.position[0] = 900 - self.rect.width
+        elif self.position[1] + self.rect.height < 320: # Vérifie si la position y est en dehors des limites en haut
+            self.position[1] = 320 - self.rect.height
+        elif self.position[1] + self.rect.height > 410: # Vérifie si la position y est en dehors des limites en bas
+            self.position[1] = 410 - self.rect.height
+        
+        self.rect.topleft = self.position # Met à jour la position du rectangle englobant
+
+    def draw(self, surface): # Dessine l'image du joueur sur la surface donnée à la position actuelle du rectangle englobant
+       surface.blit(self.image, self.rect.topleft)
+
+    def move_left(self): # Déplace le joueur vers la gauche en définissant la vélocité x à -1 et y à 0
+        self.velocity[0] = -1
+        self.velocity[1] = 0
+    def move_right(self): # Déplace le joueur vers la droite en définissant la vélocité x à 1 et y à 0
+        self.velocity[0] = 1
+        self.velocity[1] = 0
+    def move_up(self): # Déplace le joueur vers le haut en définissant la vélocité y à -1 et x à 0
+        self.velocity[1] = -1
+        self.velocity[0] = 0
+    def move_down(self): # Dplace le joueur vers le bas en définissant la vélocité y à 1 et x à 0
+        self.velocity[1] = 1
+        self.velocity[0] = 0
+    def stop(self): # Arrête le mouvement du joueur en définissant les vélocités x et y à 0
+        self.velocity[0] = 0
+        self.velocity[1] = 0
