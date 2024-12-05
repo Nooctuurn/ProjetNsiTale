@@ -10,13 +10,13 @@ clock = pygame.time.Clock()
 pygame.display.set_caption("Smash Banana")
 ecran = pygame.display.set_mode((largeur, hauteur))
 
-background = pygame.image.load('img/fond.webp')
+background = pygame.image.load('img/fond2.png')
 bg = pygame.transform.scale(background, (largeur, hauteur))
 
 icon = pygame.image.load('img/iconne.webp')
 pygame.display.set_icon(icon)
 
-player = Player(0, 320, 0, 0)
+player = Player(-60, 500, 0, 0, 4)
 keys_pressed = set()
 continuer = True
 
