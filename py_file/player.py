@@ -52,44 +52,43 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.topleft = self.position  # Met à jour la position du rectangle englobant
 
-        if self.mouvement == "run":
-            # Animation de la course (changer de frame toutes les 100ms)
-            if pygame.time.get_ticks() - self.last_update_time > 100:
-                self.animation_frame += 1
-                if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
-                    self.animation_frame = 0
-                self.image = self.RUN_frame[self.animation_frame]  # Choisit la frame suivante
-                self.last_update_time = pygame.time.get_ticks()
+        if self.mouvement == 'run':
+            if self.cote == "droite":
+                # Animation de la course (changer de frame toutes les 100ms)
+                if pygame.time.get_ticks() - self.last_update_time > 100:
+                    self.animation_frame += 1
+                    if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
+                        self.animation_frame = 0
+                    self.image = self.RUN_frame[self.animation_frame]  # Choisit la frame suivante
+                    self.last_update_time = pygame.time.get_ticks()
 
-        if self.mouvement == "run_left":
-            # Animation de la course (changer de frame toutes les 100ms)
-            if pygame.time.get_ticks() - self.last_update_time > 100:
-                self.animation_frame += 1
-                if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
-                    self.animation_frame = 0
-                current_frame = self.RUN_frame[self.animation_frame]
-                self.image = pygame.transform.flip(current_frame, True, False)
-                self.last_update_time = pygame.time.get_ticks()
+            elif self.cote == "gauche":
+                # Animation de la course (changer de frame toutes les 100ms)
+                if pygame.time.get_ticks() - self.last_update_time > 100:
+                    self.animation_frame += 1
+                    if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
+                        self.animation_frame = 0
+                    current_frame = self.RUN_frame[self.animation_frame]
+                    self.image = pygame.transform.flip(current_frame, True, False)
+                    self.last_update_time = pygame.time.get_ticks()
         
-        if self.mouvement == "idle" and self.cote == "droite":
-            # Animation de la pose (changer de frame toutes les 100ms)
-            if pygame.time.get_ticks() - self.last_update_time > 100:
-                self.animation_frame += 1
-                if self.animation_frame >= len(self.IDLE_frame):  # Réinitialise à la première frame après la dernière
-                    self.animation_frame = 0
-                self.image = self.IDLE_frame[self.animation_frame]  # Choisit la frame suivante
-                self.last_update_time = pygame.time.get_ticks()
+        if self.mouvement == "idle":
+            if self.cote == "droite":
+                if pygame.time.get_ticks() - self.last_update_time > 100:
+                    self.animation_frame += 1
+                    if self.animation_frame >= len(self.IDLE_frame):
+                        self.animation_frame = 0
+                    self.image = self.IDLE_frame[self.animation_frame]
+                    self.last_update_time = pygame.time.get_ticks()
 
-        if self.mouvement == "idle" and self.cote == "gauche":
-            # Animation de la pose (changer de frame toutes les 100ms)
-            if pygame.time.get_ticks() - self.last_update_time > 100:
-                self.animation_frame += 1
-                if self.animation_frame >= len(self.IDLE_frame):  # Réinitialise à la première frame après la dernière
-                    self.animation_frame = 0
-                current_frame = self.IDLE_frame[self.animation_frame]
-                self.image = pygame.transform.flip(current_frame, True, False)
-                self.last_update_time = pygame.time.get_ticks()
-
+            elif self.cote == "gauche":
+                if pygame.time.get_ticks() - self.last_update_time > 100:
+                    self.animation_frame += 1
+                    if self.animation_frame >= len(self.IDLE_frame):
+                        self.animation_frame = 0
+                    current_frame = self.IDLE_frame[self.animation_frame]
+                    self.image = pygame.transform.flip(current_frame, True, False)
+                    self.last_update_time = pygame.time.get_ticks()
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)  # Dessine l'image sur la surface
 
@@ -97,16 +96,16 @@ class Player(pygame.sprite.Sprite):
         self.velocity[0] = -self.speed
         self.velocity[1] = 0
         self.image = self.RUN_frame[0]  # Affiche la première frame de l'animation de course
-        self.mouvement = 'run_left'
         self.cote = "gauche"
+        self.mouvement = 'run'
 
     def move_right(self):
         self.velocity[0] = self.speed
         self.velocity[1] = 0
         self.image = self.RUN_frame[0]  # Affiche la première frame de l'animation de course
-        self.mouvement = 'run'
         self.cote = "droite"
-
+        self.mouvement = 'run'
+ 
     def move_up(self):
         self.velocity[1] = -self.speed
         self.velocity[0] = 0
@@ -116,8 +115,12 @@ class Player(pygame.sprite.Sprite):
         self.velocity[0] = 0
 
     def stop(self):
+        # Stoppe le mouvement et ajuste l'état
         self.velocity[0] = 0
         self.velocity[1] = 0
-        self.image = self.IDLE_frame[0]  # Affiche la première frame de l'animation idle
+        if self.cote == "droite":
+            self.image = self.IDLE_frame[0]  # Affiche la première frame de l'animation idle
+        else:
+            self.image = pygame.transform.flip(self.IDLE_frame[0], True, False)  # Flipping de l'image
         self.mouvement = 'idle'
 

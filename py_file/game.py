@@ -30,16 +30,14 @@ while continuer:
 
         elif event.type == pygame.KEYDOWN:
             keys_pressed.add(event.key)
-            if event.key == pygame.K_x:
-                continuer = False
             if event.key == pygame.K_RIGHT:
                 player.move_right()
             if event.key == pygame.K_LEFT:
                 player.move_left()
-            if event.key == pygame.K_DOWN:
-                player.move_down()
-            if event.key == pygame.K_UP:
-                player.move_up()
+            #if event.key == pygame.K_DOWN:
+                #player.move_down()
+            #if event.key == pygame.K_UP:
+                #player.move_up()
 
         elif event.type == pygame.KEYUP:
             keys_pressed.discard(event.key)
