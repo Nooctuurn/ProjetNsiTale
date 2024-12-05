@@ -8,7 +8,10 @@ pygame.init()
 # Dimensions de la fenêtre
 largeur, hauteur = 1200, 600
 fenetre = pygame.display.set_mode((largeur, hauteur))
-pygame.display.set_caption("Menu Principal")
+pygame.display.set_caption("Smash Banana - Menu Principal")
+
+icon = pygame.image.load('img/iconne.webp')
+pygame.display.set_icon(icon)
 
 # Couleurs
 BLANC = (255, 255, 255)
