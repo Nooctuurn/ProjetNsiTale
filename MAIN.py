@@ -12,16 +12,20 @@ class Bot:
         self.width //= 2 # on met a jour la redimension de l'image pour l'utiliser plus tard (largeur)
         self.height //= 2 # on met a jour la redimension de l'image pour l'utiliser plus tard (longueur)
 
+    def prend_des_degat(self, damage):
+        self.pv -= damage
+        if self.pv <= 0: # si le bot a plus de vie alors il est détruit
+            return True
+        return False  # le bot a toujours de la vie
+
 pygame.init()
 fenetre = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Affichage du Bot")
 
-# initialisation du mob
-bot_de_pierre = Bot("Bot de pierre", 100, 50, 10, 'img/Bot.png')
+bot_de_pierre = Bot("Bot de pierre", 100, 50, 10, 'img/Bot.png') # initialisation du mob
 
-# Coordonnées pour dessiner le mob
 x_bot, y_bot = 500, 200  # position de départ
-dx = -1  # Direction initiale
+direction = -1  # direction dans laquelle va aller le mob
 
 clock = pygame.time.Clock()
 running = True
@@ -31,23 +35,30 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # Mise à jour des coordonnées pour le mouvement
-    x_bot += dx
+    # mise à jour des coordonnées du mouvement du bot
+    if bot_de_pierre:  # si le bot est encore en vie
+        x_bot += direction
+        if x_bot <= 300:  # si le bot atteint la position 300
+            direction = 1
+        elif x_bot >= 500:  # si le bot atteint la position 500
+            direction = -1
 
-    if x_bot <= 300:  # si le bot atteint la position 300 il repart vers la droite
-        dx = 1
-    elif x_bot >= 500:  # Si le bot atteint la position 500 il repart vers la gauche
-        dx = -1
+    fenetre.fill((255, 255, 255)) # Fond blanc
 
-    fenetre.fill((255, 255, 255))  # fond blanc
-    
-    # Dessiner un carré rouge autour de l'image pour gerer la porté des attaques
-    rect = pygame.Rect(x_bot, y_bot, bot_de_pierre.width, bot_de_pierre.height)  # creer un rectangle autour de l'image
-    pygame.draw.rect(fenetre, (255, 0, 0), rect, 2)  # Rectangle rouge autour de l'image avec une bordure de 2 pixels
+    # Appliquer les dégâts si le bot est encore vivant
+    if bot_de_pierre :
+        detruit = bot_de_pierre.prend_des_degat(1)  # inflige 1 dégât
+        if detruit:
+            print(f"{bot_de_pierre.nom} a perdu")
+            bot_de_pierre = None  # supprimer le bot
 
-    # Dessiner le bot
-    fenetre.blit(bot_de_pierre.image, (x_bot, y_bot))
+    # Dessiner le bot et son carrer rouge si le bot est enore vivant
+    if bot_de_pierre:
+        rect = pygame.Rect(x_bot, y_bot, bot_de_pierre.width, bot_de_pierre.height)  # creer le rectangle autour du bot
+        pygame.draw.rect(fenetre, (255, 0, 0), rect, 2)  # bordure rouge autour de l'image
+        fenetre.blit(bot_de_pierre.image, (x_bot, y_bot))  # dessiner le bot
 
+    # Mettre à jour l'affichage
     pygame.display.flip()
     clock.tick(60)
 
