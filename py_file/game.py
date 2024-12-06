@@ -19,6 +19,7 @@ pygame.display.set_icon(icon)
 player = Player(-60, 500, 0, 0, 10)
 keys_pressed = set()
 continuer = True
+allowed_char = [pygame.K_RIGHT, pygame.K_LEFT]
 
 while continuer:
     clock.tick(60)
@@ -29,6 +30,8 @@ while continuer:
             continuer = False
 
         elif event.type == pygame.KEYDOWN:
+            if not event.key in allowed_char:
+                break
             keys_pressed.add(event.key)
             if event.key == pygame.K_RIGHT:
                 player.move_right()
@@ -40,9 +43,11 @@ while continuer:
                 #player.move_up()
 
         elif event.type == pygame.KEYUP:
+            if not event.key in allowed_char:
+                break
             keys_pressed.discard(event.key)
-            if not keys_pressed.intersection({pygame.K_RIGHT, pygame.K_LEFT, pygame.K_DOWN, pygame.K_UP}):
-                player.stop()
+            if not keys_pressed.intersection({pygame.K_RIGHT, pygame.K_LEFT}):
+                    player.stop()
 
     # Update and Draw Player
     player.update()
