@@ -16,7 +16,7 @@ bg = pygame.transform.scale(background, (largeur, hauteur))
 icon = pygame.image.load('img/iconne.webp')
 pygame.display.set_icon(icon)
 
-player = Player(-60, 500, 0, 0, 4)
+player = Player(-60, 500, 0, 0, 10)
 keys_pressed = set()
 continuer = True
 
