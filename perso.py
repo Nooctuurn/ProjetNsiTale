@@ -3,20 +3,20 @@ from pygame.locals import *
 
 # Classe représentant le personnage
 class Personnage:
-    def __init__(self, image_path, x, y):
-        self.image = pygame.image.load(image_path)
+    def __init__(self, p_image, x, y):
+        self.image = pygame.image.load(p_image)
         self.rect = self.image.get_rect(topleft=(x, y))
 
     def avancer(self):
-        self.rect.x += 10
+        self.rect.x += 1
 
     def reculer(self):
-        self.rect.x -= 10
+        self.rect.x -= 1
 
     def sauter(self):
-        self.rect.y -= 100  # Monter
-        pygame.time.delay(200)  # Pause pour simuler le saut
-        self.rect.y += 100  # Redescendre
+        self.rect.y -= 10
+        pygame.time.delay(2000)
+        self.rect.y += 10
 
     def afficher(self, screen):
         screen.blit(self.image, self.rect.topleft)
@@ -56,7 +56,6 @@ class Jeu:
 
         pygame.quit()
 
-# Lancer le jeu
 if __name__ == "__main__":
     jeu = Jeu()
     jeu.boucle_principale()
