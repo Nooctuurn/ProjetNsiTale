@@ -95,14 +95,12 @@ class Player(pygame.sprite.Sprite):
     def move_left(self):
         self.velocity[0] = -self.speed
         self.velocity[1] = 0
-        self.image = self.RUN_frame[0]  # Affiche la première frame de l'animation de course
         self.cote = "gauche"
         self.mouvement = 'run'
 
     def move_right(self):
         self.velocity[0] = self.speed
         self.velocity[1] = 0
-        self.image = self.RUN_frame[0]  # Affiche la première frame de l'animation de course
         self.cote = "droite"
         self.mouvement = 'run'
  
