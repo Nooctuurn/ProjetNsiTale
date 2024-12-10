@@ -29,7 +29,7 @@ boutons = {
     "Paramètres": pygame.Rect(x_bouton, y_bouton + 2 * (bouton_hauteur + espacement), bouton_largeur, bouton_hauteur),
 }
 
-# Fonction pour afficher le texte sur les boutons
+# Fonction pour afficher les boutons et le texte dessus
 def dessiner_bouton(surface, rect, texte, couleur_fond, couleur_texte):
     pygame.draw.rect(surface, couleur_fond, rect)
     texte_surface = police_boutons.render(texte, True, couleur_texte)

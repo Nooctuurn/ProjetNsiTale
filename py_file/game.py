@@ -27,11 +27,14 @@ keys_pressed = set()
 allowed_char = [pygame.K_RIGHT, pygame.K_LEFT]
 gamemode = "Menu"
 
+player = Player(-60, 500, 0, 0, 10)
+
 continuer = True
 print(f"DEBUG : Gamemode -> {gamemode}")
 while continuer:
     clock.tick(60)
-    if gamemode == "Menu":
+
+    if gamemode == "Menu": #Affichage du menu 
         ecran.blit(bg_menu,(0,0))
         pygame.display.set_caption("Smash Banana - Menu Principal")
         for event in pygame.event.get():
@@ -60,12 +63,9 @@ while continuer:
             menu.dessiner_bouton(menu.fenetre, rect, nom, menu.GRIS, menu.BLANC)
         
 
-    if gamemode == "Solo" :
+    if gamemode == "Solo": #Affichage du mode de jeu "Solo"
         ecran.blit(bg_jeu, (0, 0))
-        player = Player(-60, 500, 0, 0, 10)
-        print("DEBUG : BLOQUÉ ICI2")
         pygame.display.set_caption("Smash Banana - Solo")
-        print("DEBUG : BLOQUÉ ICI1")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -94,12 +94,12 @@ while continuer:
         player.update()
         player.draw(ecran)
 
-    if gamemode == "Multiplayer" :
+    if gamemode == "Multiplayer":# Affichage du mode de jeu Multijoueur
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 continuer = False
 
-    if gamemode == "Settings" : 
+    if gamemode == "Settings":#Affichage du menu des paramètres 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 continuer = False
