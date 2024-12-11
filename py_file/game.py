@@ -24,7 +24,7 @@ pygame.display.set_icon(icon)
 
 player = ""
 keys_pressed = set()
-allowed_char = [pygame.K_RIGHT, pygame.K_LEFT]
+allowed_char = [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_a]
 gamemode = "Menu"
 
 player = Player(-60, 500, 0, 0, 10)
@@ -79,6 +79,9 @@ while continuer:
                     player.move_right()
                 if event.key == pygame.K_LEFT:
                     player.move_left()
+                if event.key == pygame.K_a:
+                    player.fast_atack()
+                    player.stop()
                 #if event.key == pygame.K_DOWN:
                     #player.move_down()
                 #if event.key == pygame.K_UP:

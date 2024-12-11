@@ -9,6 +9,7 @@ largeur, hauteur = 1200, 600
 
 sprite_sheet_RUN = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\RUN.png")
 sprite_sheet_IDLE = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\IDLE.png")
+sprite_sheet_ATACK1 = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\ATTACK 1.png")
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, velocity_x, velocity_y, speed):
@@ -17,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.velocity = [velocity_x, velocity_y]
         self.IDLE_frame = self.extract_frames(sprite_sheet_IDLE, 7)
         self.RUN_frame = self.extract_frames(sprite_sheet_RUN, 8)
+        self.ATACK1_frame = self.extract_frames(sprite_sheet_ATACK1, 6)
         self.image = self.IDLE_frame[0]  # Définit l'image à la première frame de l'animation idle
         self.rect = self.image.get_rect()  # Le rectangle basé sur la première image
         self.rect.topleft = self.position
@@ -52,57 +54,55 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.topleft = self.position  # Met à jour la position du rectangle englobant
 
-        if self.mouvement == 'run':
-            if self.cote == "droite":
-                # Animation de la course (changer de frame toutes les 100ms)
-                if pygame.time.get_ticks() - self.last_update_time > 100:
-                    self.animation_frame += 1
-                    if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
-                        self.animation_frame = 0
-                    self.image = self.RUN_frame[self.animation_frame]  # Choisit la frame suivante
-                    self.last_update_time = pygame.time.get_ticks()
-
-            elif self.cote == "gauche":
-                # Animation de la course (changer de frame toutes les 100ms)
-                if pygame.time.get_ticks() - self.last_update_time > 100:
-                    self.animation_frame += 1
-                    if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
-                        self.animation_frame = 0
-                    current_frame = self.RUN_frame[self.animation_frame]
-                    self.image = pygame.transform.flip(current_frame, True, False)
-                    self.last_update_time = pygame.time.get_ticks()
+        if self.mouvement == 'run' and pygame.time.get_ticks() - self.last_update_time > 100:
+            self.animation_frame += 1
+            if self.animation_frame >= len(self.RUN_frame):  # Réinitialise à la première frame après la dernière
+                self.animation_frame = 0
+            current_frame = self.RUN_frame[self.animation_frame]
+            self.image = pygame.transform.flip(current_frame, True, False) if self.cote == "gauche" else current_frame
+            self.last_update_time = pygame.time.get_ticks()
         
-        if self.mouvement == "idle":
-            if self.cote == "droite":
-                if pygame.time.get_ticks() - self.last_update_time > 100:
-                    self.animation_frame += 1
-                    if self.animation_frame >= len(self.IDLE_frame):
-                        self.animation_frame = 0
-                    self.image = self.IDLE_frame[self.animation_frame]
-                    self.last_update_time = pygame.time.get_ticks()
+        if self.mouvement == "idle" and pygame.time.get_ticks() - self.last_update_time > 100:
+            self.animation_frame += 1
+            if self.animation_frame >= len(self.IDLE_frame):
+                self.animation_frame = 0
+            current_frame = self.IDLE_frame[self.animation_frame]
+            self.image = pygame.transform.flip(current_frame, True, False) if self.cote == "gauche" else current_frame
+            self.last_update_time = pygame.time.get_ticks()
 
-            elif self.cote == "gauche":
-                if pygame.time.get_ticks() - self.last_update_time > 100:
-                    self.animation_frame += 1
-                    if self.animation_frame >= len(self.IDLE_frame):
-                        self.animation_frame = 0
-                    current_frame = self.IDLE_frame[self.animation_frame]
-                    self.image = pygame.transform.flip(current_frame, True, False)
-                    self.last_update_time = pygame.time.get_ticks()
+        if self.mouvement == "atack1" and pygame.time.get_ticks() - self.last_update_time > 100:
+            self.animation_frame += 1
+            if self.animation_frame >= len(self.ATACK1_frame):
+                self.animation_frame = 0
+                self.mouvement = 'idle'
+                keys = pygame.key.get_pressed()
+                if keys[K_LEFT]:
+                    self.move_left()
+                elif keys[K_RIGHT]:
+                    self.move_right()
+            else:
+                current_frame = self.ATACK1_frame[self.animation_frame]
+                self.image = pygame.transform.flip(current_frame, True, False) if self.cote == "gauche" else current_frame
+                self.last_update_time = pygame.time.get_ticks()
+            return
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)  # Dessine l'image sur la surface
 
     def move_left(self):
-        self.velocity[0] = -self.speed
-        self.velocity[1] = 0
-        self.cote = "gauche"
-        self.mouvement = 'run'
+        if self.mouvement not in ["atack1"]:  # Ne permet pas de bouger pendant l'attaque
+            self.velocity[0] = -self.speed
+            self.velocity[1] = 0
+            if self.mouvement == 'run' or self.mouvement == 'idle':
+                self.cote = "gauche"
+                self.mouvement = 'run'
 
     def move_right(self):
-        self.velocity[0] = self.speed
-        self.velocity[1] = 0
-        self.cote = "droite"
-        self.mouvement = 'run'
+        if self.mouvement not in ["atack1"]:  # Ne permet pas de bouger pendant l'attaque
+            self.velocity[0] = self.speed
+            self.velocity[1] = 0
+            if self.mouvement == 'run' or self.mouvement == 'idle':
+                self.cote = "droite"
+                self.mouvement = 'run'
  
     def move_up(self):
         self.velocity[1] = -self.speed
@@ -112,13 +112,19 @@ class Player(pygame.sprite.Sprite):
         self.velocity[1] = self.speed
         self.velocity[0] = 0
 
+    def fast_atack(self):
+        if self.mouvement not in ['atack1']:
+            self.mouvement = 'atack1'
+            self.animation_frame = 0  # Réinitialise l'animation d'attaque
+            self.last_update_time = pygame.time.get_ticks()  # Redémarre le timer
     def stop(self):
         # Stoppe le mouvement et ajuste l'état
         self.velocity[0] = 0
         self.velocity[1] = 0
-        if self.cote == "droite":
-            self.image = self.IDLE_frame[0]  # Affiche la première frame de l'animation idle
-        else:
-            self.image = pygame.transform.flip(self.IDLE_frame[0], True, False)  # Flipping de l'image
-        self.mouvement = 'idle'
+        if self.mouvement == 'run' or self.mouvement == 'idle':
+            if self.cote == "droite":
+                self.image = self.IDLE_frame[0]  # Affiche la première frame de l'animation idle
+            else:
+                self.image = pygame.transform.flip(self.IDLE_frame[0], True, False)  # Flipping de l'image
+            self.mouvement = 'idle'
 
