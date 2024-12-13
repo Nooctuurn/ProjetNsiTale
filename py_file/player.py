@@ -7,8 +7,8 @@ from PIL import Image
 pygame.init()
 largeur, hauteur = 1200, 600
 
-sprite_sheet_RUN = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\RUN.png")
-sprite_sheet_IDLE = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\IDLE.png")
+sprite_sheet_RUN = pygame.image.load("Sprite/Knight 2D Pixel Art/Sprites/with_outline/RUN.png")
+sprite_sheet_IDLE = pygame.image.load("Sprite/Knight 2D Pixel Art/Sprites/with_outline/IDLE.png")
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, velocity_x, velocity_y, speed):

@@ -13,9 +13,6 @@ ecran = pygame.display.set_mode((largeur, hauteur))
 
 # Importation des images / icônes
 
-bg_menu = pygame.image.load('img/fond.jpeg')
-bg_menu = pygame.transform.scale(bg_menu,(largeur,hauteur))
-
 bg_jeu = pygame.image.load('img/fond2.png') # Jeu
 bg_jeu = pygame.transform.scale(bg_jeu, (largeur, hauteur)) # Jeu
 
@@ -35,7 +32,7 @@ while continuer:
     clock.tick(60)
 
     if gamemode == "Menu": #Affichage du menu 
-        ecran.blit(bg_menu,(0,0))
+        ecran.blit(menu.fond,(0,0))
         pygame.display.set_caption("Smash Banana - Menu Principal")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -60,7 +57,7 @@ while continuer:
                             break
 
         for nom, rect in menu.boutons.items():
-            menu.dessiner_bouton(menu.fenetre, rect, nom, menu.GRIS, menu.BLANC)
+            menu.dessiner_bouton(menu.fenetre, rect, nom, menu.BLEU_FONCE, menu.OR, menu.BLEU_CLAIR)
         
 
     if gamemode == "Solo": #Affichage du mode de jeu "Solo"
@@ -98,11 +95,16 @@ while continuer:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 continuer = False
+        print("Mode de jeu pas encore implémenté !")
+        gamemode == "Menu"
+        
 
     if gamemode == "Settings":#Affichage du menu des paramètres 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 continuer = False
-
+        print("Mode de jeu pas encore implémenté !")
+        gamemode == "Menu"
+        
 
     pygame.display.update()
