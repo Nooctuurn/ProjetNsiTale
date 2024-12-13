@@ -3,6 +3,7 @@ import sys
 import menu
 from random import randint
 from player import Player
+from perso_nj import Bot
 
 pygame.init()
 
@@ -12,6 +13,12 @@ pygame.display.set_caption("Smash Banana")
 ecran = pygame.display.set_mode((largeur, hauteur))
 
 # Importation des images / icônes
+
+# Initialisation du bot
+bot = Bot("Bot de pierre", 100, 50, 1, 'img/Bot.png')
+x_bot, y_bot = 800, 300  # Position initiale du bot
+direction_bot = -1  # Mouvement du bot
+
 
 bg_menu = pygame.image.load('img/fond.jpeg')
 bg_menu = pygame.transform.scale(bg_menu,(largeur,hauteur))
@@ -94,8 +101,33 @@ while continuer:
                 if not keys_pressed.intersection({pygame.K_RIGHT, pygame.K_LEFT}):
                         player.stop()
 
+        # Déplacement du bot
+        if bot:
+            x_bot += direction_bot
+            if x_bot <= 600:  # Limite gauche
+                direction_bot = 1
+            elif x_bot >= 800:  # Limite droite
+                direction_bot = -1
+
+        # Zone d'attaque du joueur
+        if player.mouvement == "atack1":
+            attack_zone = player.rect.inflate(50, 0)  # Étendre la zone d'attaque en largeur
+            bot_rect = pygame.Rect(x_bot, y_bot, bot.width, bot.height)  # Rectangle du bot
+            if attack_zone.colliderect(bot_rect):  # Collision entre la zone d'attaque et le bot
+                bot_stop = bot.prend_des_degat(10)  # Inflige 10 dégâts au bot
+                if bot_stop:  # Si le bot est détruit
+                    print(f"{bot.nom} est détruit !")
+                    bot = None  # Supprime le bot
+                else:
+                    print(f"{bot.nom} a {bot.pv} PV restants.")
+
+        # Mise à jour et affichage
         player.update()
         player.draw(ecran)
+
+        # Dessiner le bot
+        if bot:
+            ecran.blit(bot.image, (x_bot, y_bot))
 
     if gamemode == "Multiplayer":# Affichage du mode de jeu Multijoueur
         for event in pygame.event.get():
