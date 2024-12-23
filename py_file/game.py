@@ -36,6 +36,8 @@ gamemode = "Menu"
 
 player = Player(-60, 500, 0, 0, 10)
 
+last_damage_time = 0  # Timestamp de la dernière fois où le bot a pris des dégâts
+
 continuer = True
 print(f"DEBUG : Gamemode -> {gamemode}")
 while continuer:
@@ -69,8 +71,8 @@ while continuer:
         for nom, rect in menu.boutons.items():
             menu.dessiner_bouton(menu.fenetre, rect, nom, menu.GRIS, menu.BLANC)
         
-
-    if gamemode == "Solo": #Affichage du mode de jeu "Solo"
+        
+    if gamemode == "Solo":
         ecran.blit(bg_jeu, (0, 0))
         pygame.display.set_caption("Smash Banana - Solo")
 
@@ -79,55 +81,56 @@ while continuer:
                 continuer = False
 
             elif event.type == pygame.KEYDOWN:
-                if not event.key in allowed_char:
-                    break
-                keys_pressed.add(event.key)
-                if event.key == pygame.K_RIGHT:
-                    player.move_right()
-                if event.key == pygame.K_LEFT:
-                    player.move_left()
-                if event.key == pygame.K_a:
-                    player.fast_atack()
-                    player.stop()
-                #if event.key == pygame.K_DOWN:
-                    #player.move_down()
-                #if event.key == pygame.K_UP:
-                    #player.move_up()
-
-            elif event.type == pygame.KEYUP:
-                if not event.key in allowed_char:
-                    break
-                keys_pressed.discard(event.key)
-                if not keys_pressed.intersection({pygame.K_RIGHT, pygame.K_LEFT}):
+                if event.key in allowed_char:
+                    keys_pressed.add(event.key)
+                    if event.key == pygame.K_RIGHT:
+                        player.move_right()
+                    if event.key == pygame.K_LEFT:
+                        player.move_left()
+                    if event.key == pygame.K_a:
+                        player.fast_atack()
                         player.stop()
 
-        # Déplacement du bot
-        if bot:
-            x_bot += direction_bot
-            if x_bot <= 600:  # Limite gauche
-                direction_bot = 1
-            elif x_bot >= 800:  # Limite droite
-                direction_bot = -1
+            elif event.type == pygame.KEYUP:
+                if event.key in allowed_char:
+                    keys_pressed.discard(event.key)
+                    if not keys_pressed.intersection({pygame.K_RIGHT, pygame.K_LEFT}):
+                        player.stop()
 
-        # Zone d'attaque du joueur
-        if player.mouvement == "atack1":
-            attack_zone = player.rect.inflate(50, 0)  # Étendre la zone d'attaque en largeur
+        # Zone d'attaque et vérification de collision
+        if player.mouvement == "atack1" and bot:
+            attack_zone = player.rect.inflate(-100, 0)  # Étendre la zone d'attaque
             bot_rect = pygame.Rect(x_bot, y_bot, bot.width, bot.height)  # Rectangle du bot
+            
+            current_time = pygame.time.get_ticks()  # Temps actuel
             if attack_zone.colliderect(bot_rect):  # Collision entre la zone d'attaque et le bot
-                bot_stop = bot.prend_des_degat(10)  # Inflige 10 dégâts au bot
-                if bot_stop:  # Si le bot est détruit
-                    print(f"{bot.nom} est détruit !")
-                    bot = None  # Supprime le bot
-                else:
-                    print(f"{bot.nom} a {bot.pv} PV restants.")
+                if current_time - last_damage_time >= 750:  # Si 500 ms se sont écoulées depuis le dernier dégât
+                    bot_stop = bot.prend_des_degat(10)  # Inflige des dégâts au bot
+                    last_damage_time = current_time  # Met à jour le dernier temps d'attaque
+                    
+                    if bot_stop:  # Si le bot est détruit
+                        print(f"{bot.nom} est détruit !")
+                        bot = None
 
-        # Mise à jour et affichage
+        # Mise à jour et affichage du joueur
         player.update()
         player.draw(ecran)
 
-        # Dessiner le bot
+        # Déplacement et affichage du bot
         if bot:
+            x_bot += direction_bot
+            if x_bot <= 600:
+                direction_bot = 1
+            elif x_bot >= 800:
+                direction_bot = -1
             ecran.blit(bot.image, (x_bot, y_bot))
+        else:
+            font = pygame.font.Font(None, 50)
+            text = font.render("Bot détruit !", True, (255, 0, 0))
+            ecran.blit(text, (largeur // 2 - 100, hauteur // 2))
+
+        pygame.display.update()
+
 
     if gamemode == "Multiplayer":# Affichage du mode de jeu Multijoueur
         for event in pygame.event.get():

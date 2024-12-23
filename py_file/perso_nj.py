@@ -10,7 +10,7 @@ class Bot:
         self.width, self.height = self.image.get_size()  # Dimensions basées sur l'image
 
     def prend_des_degat(self, degats):
-        degats_effectifs = 10 - self.defense  # Applique la défense
+        degats_effectifs = degats - self.defense  # Applique la défense
         self.pv -= degats_effectifs
         print(f"{self.nom} a pris {degats_effectifs} dégâts. PV restants : {self.pv}.")
         return self.pv <= 0  # Retourne True si le bot n'a plus de PV
