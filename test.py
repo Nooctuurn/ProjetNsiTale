@@ -1,62 +1,51 @@
 import pygame
-from pygame.locals import *
+import sys
 
-# Classe représentant le personnage
-class Personnage:
-    def __init__(self, image_path, x, y):
-        self.image = pygame.image.load(image_path)
-        self.rect = self.image.get_rect(topleft=(x, y))
+# Initialisation de Pygame
+pygame.init()
 
-    def avancer(self):
-        self.rect.x += 10
+# Paramètres de la fenêtre
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Simulation de Gravité")
 
-    def reculer(self):
-        self.rect.x -= 10
+# Couleurs
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
 
-    def sauter(self):
-        self.rect.y -= 100  # Monter
-        pygame.time.delay(200)  # Pause pour simuler le saut
-        self.rect.y += 100  # Redescendre
+# Définir un objet (une balle)
+ball_radius = 20
+ball_x = WIDTH // 2
+ball_y = HEIGHT // 2
+ball_speed_y = 0  # Vitesse verticale initiale
 
-    def afficher(self, screen):
-        screen.blit(self.image, self.rect.topleft)
+# Gravité
+gravity = 0.5  # Force de gravité
+bounce = -0.7  # Coefficient de rebond
 
-# Classe principale du jeu
-class Jeu:
-    def __init__(self):
-        pygame.init()
-        self.clock = pygame.time.Clock()
-        self.running = True
-        self.screen = pygame.display.set_mode((1080, 720))
-        pygame.display.set_caption("Jeu avec Personnage")
-        self.bg = pygame.image.load('image/bg.jpg')
-        self.joueur = Personnage('image/PygameAssets-main/player.png', 100, 300)
+# Horloge pour contrôler la fréquence d'images
+clock = pygame.time.Clock()
 
-    def boucle_principale(self):
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    self.running = False
+# Boucle principale
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-            touches = pygame.key.get_pressed()
+    # Appliquer la gravité
+    ball_speed_y += gravity
+    ball_y += ball_speed_y
 
-            # Gestion des mouvements
-            if touches[K_RIGHT]:
-                self.joueur.avancer()
-            if touches[K_LEFT]:
-                self.joueur.reculer()
-            if touches[K_UP]:
-                self.joueur.sauter()
+    # Détecter le sol (et rebondir)
+    if ball_y + ball_radius >= HEIGHT:
+        ball_y = HEIGHT - ball_radius
+        ball_speed_y *= bounce  # Rebondir avec une perte d'énergie
 
-            # Affichage
-            self.screen.blit(self.bg, (0, 0))
-            self.joueur.afficher(self.screen)
-            pygame.display.flip()
-            self.clock.tick(60)
+    # Dessiner tout
+    screen.fill(WHITE)
+    pygame.draw.circle(screen, BLUE, (ball_x, int(ball_y)), ball_radius)
 
-        pygame.quit()
-
-# Lancer le jeu
-if __name__ == "__main__":
-    jeu = Jeu()
-    jeu.boucle_principale()
+    # Rafraîchir l'écran
+    pygame.display.flip()
+    clock.tick(60)  # Limiter à 60 FPS
