@@ -12,7 +12,7 @@ sprite_sheet_IDLE = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_o
 sprite_sheet_ATACK1 = pygame.image.load("Sprite\Knight 2D Pixel Art\Sprites\with_outline\ATTACK 1.png")
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, velocity_x, velocity_y, speed):
+    def __init__(self, x, y, velocity_x, velocity_y, speed, pv):
         super().__init__()
         self.position = [x, y]
         self.velocity = [velocity_x, velocity_y]
@@ -27,6 +27,7 @@ class Player(pygame.sprite.Sprite):
         self.mouvement = "idle"
         self.cote = "droite"
         self.speed = speed
+        self.attaque_active = False  # Indique si l'attaque est en cours
 
     def extract_frames(self, spritesheet, num_frames):
         frame_width = spritesheet.get_width() // num_frames
@@ -117,6 +118,7 @@ class Player(pygame.sprite.Sprite):
             self.mouvement = 'atack1'
             self.animation_frame = 0  # Réinitialise l'animation d'attaque
             self.last_update_time = pygame.time.get_ticks()  # Redémarre le timer
+            
     def stop(self):
         # Stoppe le mouvement et ajuste l'état
         self.velocity[0] = 0
