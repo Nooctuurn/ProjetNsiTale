@@ -43,12 +43,19 @@ class Game:
         self.player.on_ground = False  # Par défaut, le joueur n'est pas au sol
         for wall in self.walls:  # Parcours des murs
             if self.player.feet.colliderect(wall):  # Si les pieds touchent un mur
-                # Vérifie si le joueur est au-dessus du mur
-                if self.player.velocity_y > 0:  # Se déplace vers le bas
-                    self.player.on_ground = True  # Le joueur est au sol
-                    self.player.velocity_y = 0  # Annule la vitesse verticale
-                    self.player.position[1] = wall.top - self.player.rect.height  # Ajuste sa position au-dessus du mur
-                break
+                if self.player.velocity_y > 0:  # Si le joueur tombe
+                    self.player.on_ground = True
+                    self.player.velocity_y = 0
+
+                    # Évite les vibrations en appliquant une marge
+                    delta = abs(self.player.position[1] - (wall.top - self.player.rect.height))
+                    if delta > 1:  # Seulement si le décalage est significatif
+                        self.player.position[1] = wall.top - self.player.rect.height
+                    break  # Sortir de la boucle une fois qu'une collision est traitée
+
+        # Actualiser la position réelle de la hitbox
+        self.player.rect.topleft = self.player.position
+
 
     def draw_debug(self):
         pygame.draw.rect(self.screen, (0, 255, 0), self.player.feet, 2)  # Pieds du joueur en vert
@@ -60,7 +67,7 @@ class Game:
     def handle_input(self):
         pressed = pygame.key.get_pressed()
 
-        if pressed[pygame.K_UP]:  # Saut
+        if pressed[pygame.K_UP]:
             self.player.jump()
         elif pressed[pygame.K_RIGHT]:
             self.player.move_right()
@@ -72,23 +79,24 @@ class Game:
     def run(self):
         # boucle du jeu
         running = True
-        clock =pygame.time.Clock()
+        clock = pygame.time.Clock()
 
-        while running :
+        while running:
             
             self.player.save_location()
             self.handle_input()
             self.update()
             self.group.center(self.player.rect.center)
             self.group.draw(self.screen)
-            self.draw_debug()
+
+            # Active le mode débogage
+            #self.draw_debug()
+
             pygame.display.flip()
 
-            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
             clock.tick(60)
         pygame.quit()
-        
