@@ -1,0 +1,29 @@
+{
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "carte.tmx": {
+            "scale": 0.46075,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 599.0233315246879,
+                "y": 304.93760173629954
+            }
+        },
+        "sans titre.tmx": {
+            "scale": 0.46075,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 599.0233315246879,
+                "y": 304.93760173629954
+            }
+        }
+    },
+    "openFiles": [
+    ],
+    "project": "sans titre.tiled-project",
+    "recentFiles": [
+        "sans titre.tmx"
+    ]
+}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="128" height="29" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="72">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="128" height="29" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="75">
  <tileset firstgid="1" source="BG_1.tsx"/>
  <tileset firstgid="3001" source="Terrain_and_Props.tsx"/>
  <tileset firstgid="3681" source="BG_2.tsx"/>
@@ -279,14 +279,13 @@
   <object id="58" type="collision" x="1694.67" y="333.333" width="16" height="17.3333"/>
   <object id="59" type="collision" x="1711.33" y="319.333" width="16.6667" height="15.3333"/>
   <object id="60" type="collision" x="1726" y="303.333" width="82" height="17.3333"/>
-  <object id="61" type="collision" x="1792.63" y="301.875">
-   <polygon points="0,0 15.125,0.25 15.25,-13.875 10.625,-14"/>
-  </object>
-  <object id="62" type="collision" x="1808.5" y="272.5" width="15.5" height="15.5"/>
   <object id="63" type="collision" x="1824" y="271.5" width="173.5" height="16.5"/>
   <object id="64" type="collision" x="1922.5" y="287.5" width="75" height="30.5"/>
   <object id="68" type="collision" x="79.8182" y="352" width="32.1818" height="15.6364"/>
   <object id="70" type="collision" x="47.8182" y="368.182" width="32" height="15.2727"/>
   <object id="71" type="collision" x="80.3636" y="367.818" width="47.2727" height="15.4545"/>
+  <object id="72" type="collision" x="1793" y="285.5" width="41.5" height="16.5"/>
+  <object id="73" type="collision" x="1807.5" y="321" width="31" height="49"/>
+  <object id="74" type="collision" x="1681" y="348.5" width="158.5" height="49"/>
  </objectgroup>
 </map>
