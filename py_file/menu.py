@@ -1,37 +1,36 @@
 import pygame
-pygame.init()
 
-largeur, hauteur = 1200, 600
-fenetre = pygame.display.set_mode((largeur, hauteur))
-pygame.display.set_caption("Smash Banana - Menu Principal")
+class Menu:
+    def __init__(self, ecran, largeur, hauteur):
+        self.ecran = ecran
+        self.largeur = largeur
+        self.hauteur = hauteur
 
-BLANC = (255, 255, 255)
-GRIS = (169, 169, 169)
+        # Charger l'image de fond du menu
+        self.bg_menu = pygame.image.load('img/fondacceuiljouer.png').convert()
+        self.bg_menu = pygame.transform.scale(self.bg_menu, (self.largeur, self.hauteur))
 
-fond = pygame.image.load("img/fond.jpeg")
-fond = pygame.transform.scale(fond, (largeur, hauteur))
+        # Définition du bouton "Jouer"
+        self.button_color = (0, 200, 0)
+        self.button_hover_color = (0, 255, 0)  # Vert clair au survol
+        self.button_rect = pygame.Rect(self.largeur // 2 - 100, 300, 200, 60)
+        self.button_text = pygame.font.Font(None, 40).render("Jouer", True, (255, 255, 255))
 
-police_titre = pygame.font.Font(None, 80)
-police_boutons = pygame.font.Font(None, 50)
+    def draw(self):
+        """Affiche le menu avec un bouton Jouer."""
+        self.ecran.blit(self.bg_menu, (0, 0))
 
-texte_titre = police_titre.render("Titre", True, BLANC)
-titre_rect = texte_titre.get_rect(center=(largeur // 2, hauteur // 4))
+        # Récupérer la position de la souris
+        mouse_pos = pygame.mouse.get_pos()
 
-bouton_largeur, bouton_hauteur = 300, 60
-espacement = 20
+        # Vérifier si la souris est sur le bouton pour changer sa couleur
+        button_color = self.button_hover_color if self.button_rect.collidepoint(mouse_pos) else self.button_color
 
-x_bouton = (largeur - bouton_largeur) // 2
-y_bouton = hauteur // 2
+        pygame.draw.rect(self.ecran, button_color, self.button_rect, border_radius=15)
+        self.ecran.blit(self.button_text, (self.button_rect.x + 60, self.button_rect.y + 15))
 
-boutons = {
-    "Solo": pygame.Rect(x_bouton, y_bouton, bouton_largeur, bouton_hauteur),
-    "Multijoueur en local": pygame.Rect(x_bouton, y_bouton + bouton_hauteur + espacement, bouton_largeur, bouton_hauteur),
-    "Paramètres": pygame.Rect(x_bouton, y_bouton + 2 * (bouton_hauteur + espacement), bouton_largeur, bouton_hauteur),
-}
+    def handle_click(self, event, game):
 
-# Fonction pour afficher les boutons et le texte dessus
-def dessiner_bouton(surface, rect, texte, couleur_fond, couleur_texte):
-    pygame.draw.rect(surface, couleur_fond, rect)
-    texte_surface = police_boutons.render(texte, True, couleur_texte)
-    texte_rect = texte_surface.get_rect(center=rect.center)
-    surface.blit(texte_surface, texte_rect)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.button_rect.collidepoint(event.pos):
+                game.is_playing = True
