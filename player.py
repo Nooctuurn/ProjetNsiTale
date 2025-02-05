@@ -8,7 +8,9 @@ class Player(pygame.sprite.Sprite):
         self.image = self.get_image(0, 0)
         self.image.set_colorkey([0, 0, 0])
         self.rect = self.image.get_rect()
-        #self.rect_camera = self.image.get_rect()*2
+        # Tolérance horizontale (en pixels)
+        self.camera_margin_x = 100
+        self.camera_margin_y = 80 
         self.position = [x, y]
         self.velocity_y = 0
         self.feet = pygame.Rect(0, 0, self.rect.width * 0.5 , 12)

@@ -55,10 +55,28 @@ class Game:
             if sprite.feet.collidelist(self.walls) > -1:
                 sprite.move_back()
 
-            self.apply_gravity()  # Applique la gravité au joueur
+        self.apply_gravity()  # Applique la gravité au joueur
 
         # Actualiser la position réelle de la hitbox
         self.player.rect.topleft = self.player.position
+    def update_camera(self):
+        """Déplace la caméra uniquement si le joueur sort de la zone de tolérance"""
+        camera_x, camera_y = self.group.view.center
+
+        # Vérifier si le joueur dépasse la zone de tolérance
+        if self.player.rect.centerx < camera_x - self.player.camera_margin_x:
+            camera_x = self.player.rect.centerx + self.player.camera_margin_x
+        elif self.player.rect.centerx > camera_x + self.player.camera_margin_x:
+            camera_x = self.player.rect.centerx - self.player.camera_margin_x
+
+        if self.player.rect.centery < camera_y - self.player.camera_margin_y:
+            camera_y = self.player.rect.centery + self.player.camera_margin_y
+        elif self.player.rect.centery > camera_y + self.player.camera_margin_y:
+            camera_y = self.player.rect.centery - self.player.camera_margin_y
+
+        # Appliquer le déplacement de la caméra
+        self.group.center((camera_x, camera_y))
+
 
     def handle_input(self):
         """Gère les entrées du clavier"""
@@ -82,7 +100,8 @@ class Game:
             self.player.save_location()
             self.handle_input()
             self.update()
-            self.group.center(self.player.rect.center)
+            self.update_camera()
+            #self.group.center(self.player.rect.center)
             self.group.draw(self.screen)
 
             pygame.display.flip()

@@ -3,12 +3,23 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
-        "carte.tmx": {
-            "scale": 0.46075,
-            "selectedLayer": 0,
+        "C:/Users/yoyolerigolo/Documents/GitHub/ProjetNsiTale/image/Free.tmx": {
+            "scale": 3.3767,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 599.0233315246879,
-                "y": 304.93760173629954
+                "x": 61.89474931145793,
+                "y": 360.26297864779224
+            }
+        },
+        "carte.tmx": {
+            "expandedObjectLayers": [
+                10
+            ],
+            "scale": 0.75,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 538.6666666666667,
+                "y": 282
             }
         },
         "sans titre.tmx": {
