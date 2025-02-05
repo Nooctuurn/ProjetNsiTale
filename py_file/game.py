@@ -30,16 +30,24 @@ class Game:
         self.continuer = True
 
     def handle_events(self):
+        """Gère les événements globaux (menu et jeu)."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.continuer = False
-
+            
             if not self.is_playing:
-                self.menu.handle_click(event, self)
+                if self.menu.in_accueil_2:
+                    # Si on est sur le deuxième accueil et qu'on appuie sur une touche, on démarre le jeu
+                    if event.type == pygame.KEYDOWN:
+                        self.is_playing = True
+                else:
+                    # Vérifie si le menu détecte un clic sur "Jouer" pour passer au deuxième accueil
+                    self.menu.handle_event(event)
             else:
                 self.handle_solo_events(event)
 
     def handle_solo_events(self, event):
+        """Gère les événements pour le mode solo."""
         if event.type == pygame.KEYDOWN:
             if event.key in self.allowed_char:
                 self.keys_pressed.add(event.key)
@@ -57,6 +65,7 @@ class Game:
                     self.player.stop()
 
     def update_solo(self):
+        """Met à jour le jeu en mode solo."""
         self.player.update()
         if self.bot and self.bot.pv > 0:
             self.bot_behavior()
@@ -76,6 +85,7 @@ class Game:
                 self.bot.move_right()
 
     def draw_solo(self):
+        """Affiche le jeu en mode solo."""
         self.ecran.blit(self.bg_jeu, (0, 0))
         self.player.draw(self.ecran)
 
