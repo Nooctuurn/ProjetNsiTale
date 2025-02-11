@@ -40,6 +40,11 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y = self.jump_strength
             self.on_ground = False  # Désactive le double saut
 
+    def double_jump(self):
+        """Permet de faire un double saut"""
+        if not self.on_ground and self.velocity_y > 0:
+            self.velocity_y = self.jump_strength
+    
     def update(self):
         """Met à jour la position et les collisions"""
         self.rect.topleft = self.position

@@ -15,7 +15,7 @@ class Game:
         tmx_data = pytmx.util_pygame.load_pygame('image/Free.tmx')
         map_data = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.screen.get_size())
-        map_layer.zoom = 1.5
+        map_layer.zoom = 2.5
 
         #generer
         player_position = tmx_data.get_object_by_name("player")
@@ -59,6 +59,7 @@ class Game:
 
         # Actualiser la position réelle de la hitbox
         self.player.rect.topleft = self.player.position
+
     def update_camera(self):
         """Déplace la caméra uniquement si le joueur sort de la zone de tolérance"""
         camera_x, camera_y = self.group.view.center
@@ -84,6 +85,7 @@ class Game:
 
         if pressed[pygame.K_UP]:
             self.player.jump()
+            self.player.double_jump()
             
         elif pressed[pygame.K_RIGHT]:
             self.player.move_right()
