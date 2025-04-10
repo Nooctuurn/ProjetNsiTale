@@ -1,118 +1,136 @@
 import pygame
-import sys
-from random import randint
+import pytmx
+import pyscroll
 from player import Player
 from perso_nj import Bot
-from menu import Menu 
+
+pygame.init()
 
 class Game:
     def __init__(self):
-        pygame.init()
-        self.is_playing = False
-        self.largeur, self.hauteur = 1200, 600
-        self.clock = pygame.time.Clock()
-        self.ecran = pygame.display.set_mode((self.largeur, self.hauteur))
-        pygame.display.set_caption("Smash Banana")
-        self.bg_jeu = pygame.image.load('img/fond2.png').convert()
-        self.bg_jeu = pygame.transform.scale(self.bg_jeu, (self.largeur, self.hauteur))
-        self.icon = pygame.image.load('img/iconne.webp')
-        pygame.display.set_icon(self.icon)
+        # Fenêtre de jeu
+        self.screen = pygame.display.set_mode((1200,600))
+        pygame.display.set_caption("platformer - smash odyssey")
 
-        # Initialiser le menu
-        self.menu = Menu(self.ecran, self.largeur, self.hauteur)
+        # Charger la map
+        tmx_data = pytmx.util_pygame.load_pygame('Assets/carte.tmx')
+        map_data = pyscroll.data.TiledMapData(tmx_data)
+        map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.screen.get_size())
 
-        # Initialiser les objets du jeu
-        self.player = Player(-60, 500, 0, 0, 10, 100)
-        self.bot = Bot("Demon chauve souris", 100, 1, 'img/Bot.png', 700, 400, 0, 0, 4)
-        self.direction_bot = -1
-        self.keys_pressed = set()
-        self.allowed_char = [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_a]
-        self.continuer = True
+        # Générer le joueur
+        player_position = tmx_data.get_object_by_name("player")
+        self.player = Player(player_position.x, player_position.y)
 
-    def handle_events(self):
-        """Gère les événements globaux (menu et jeu)."""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.continuer = False
-            
-            if not self.is_playing:
-                if self.menu.in_accueil_2:
-                    # Si on est sur le deuxième accueil et qu'on appuie sur une touche, on démarre le jeu
-                    if event.type == pygame.KEYDOWN:
-                        self.is_playing = True
-                else:
-                    # Vérifie si le menu détecte un clic sur "Jouer" pour passer au deuxième accueil
-                    self.menu.handle_event(event)
-            else:
-                self.handle_solo_events(event)
+        # Générer le mob
+        mob_position = tmx_data.get_object_by_name("mob")
+        self.bot = Bot("Demon chauve souris", 100, 1,mob_position.x, mob_position.y, 1)
 
-    def handle_solo_events(self, event):
-        """Gère les événements pour le mode solo."""
-        if event.type == pygame.KEYDOWN:
-            if event.key in self.allowed_char:
-                self.keys_pressed.add(event.key)
-                if event.key == pygame.K_RIGHT:
-                    self.player.move_right()
-                if event.key == pygame.K_LEFT:
-                    self.player.move_left()
-                if event.key == pygame.K_a:
-                    self.player.fast_atack()
+        # Liste des collisions
+        self.walls = [pygame.Rect(obj.x, obj.y, obj.width, obj.height) for obj in tmx_data.objects if obj.type == "collision"]
 
-        elif event.type == pygame.KEYUP:
-            if event.key in self.allowed_char:
-                self.keys_pressed.discard(event.key)
-                if not self.keys_pressed.intersection({pygame.K_RIGHT, pygame.K_LEFT}):
-                    self.player.stop()
+        # Groupe de calques
+        self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4)
+        self.group.add(self.player)
+        #self.group.add(self.bot)
 
-    def update_solo(self):
-        """Met à jour le jeu en mode solo."""
-        self.player.update()
-        if self.bot and self.bot.pv > 0:
-            self.bot_behavior()
-        elif self.bot:
-            self.bot = None  # Bot détruit
+        # Timer pour la vérification de "is_on_ground"
+        self.time_since_last_check = 0
+        self.check_interval = 250  # seconde en millisecondes
 
-    def bot_behavior(self):
-        """Gère le comportement du bot."""
-        if self.bot.pv == 100 and self.bot.mouvement == "idle":
-            self.bot.velocity[0] = self.direction_bot * self.bot.speed
-            self.bot.update()
-            if self.bot.position[0] <= 600:
-                self.direction_bot = 1
-                self.bot.move_left()
-            elif self.bot.position[0] >= 800:
-                self.direction_bot = -1
-                self.bot.move_right()
+    def is_on_ground(self):
+        """Vérifie s'il y a un bloc de collision sous le joueur."""
+        feet_rect = pygame.Rect(self.player.feet.x, self.player.feet.y + 2, self.player.feet.width, 2)
+        return feet_rect.collidelist(self.walls) > -1
 
-    def draw_solo(self):
-        """Affiche le jeu en mode solo."""
-        self.ecran.blit(self.bg_jeu, (0, 0))
-        self.player.draw(self.ecran)
-
-        if self.bot:
-            self.bot.draw(self.ecran)
+    def apply_gravity(self):
+        """Applique la gravité uniquement si le joueur n'est pas sur le sol."""
+        if not self.is_on_ground():
+            self.player.velocity_y += 0.3  # Appliquer la gravité
+            self.player.position.y += self.player.velocity_y
+            self.player.on_ground = False
         else:
-            font = pygame.font.Font(None, 50)
-            text = font.render("Bot détruit !", True, (255, 0, 0))
-            self.ecran.blit(text, (self.largeur // 2 - 100, self.hauteur // 2))
+            self.player.on_ground = True
+            self.player.velocity_y = 0
+            
+        # Mise à jour de la hitbox
+        self.player.rect.y = int(self.player.position.y)
+        self.player.feet.y = self.player.rect.bottom
+
+    def handle_collisions(self):
+        """Gère les collisions après le déplacement du joueur."""
+        for wall in self.walls:
+            if self.player.rect.colliderect(wall):
+                if self.player.velocity_y > 0:  # Tombe
+                    self.player.position.y = wall.top - self.player.rect.height
+                    self.player.velocity_y = 0
+                    self.player.on_ground = True
+                elif self.player.velocity_y < 0:  # Monte
+                    self.player.position.y = wall.bottom
+                    self.player.velocity_y = 0
+                
+                if self.player.old_position.x < self.player.position.x:  # Va à droite
+                    self.player.position.x = wall.left - self.player.rect.width
+                elif self.player.old_position.x > self.player.position.x:  # Va à gauche
+                    self.player.position.x = wall.right
+
+        # Mise à jour de la position réelle
+        self.player.rect.topleft = self.player.position
+
+    def update(self, delta_time):
+        self.player.save_location()
+
+        self.time_since_last_check += delta_time
+        if self.time_since_last_check >= self.check_interval:
+            self.time_since_last_check = 0
+            self.player.on_ground = self.is_on_ground()
+
+        if not self.player.on_ground or self.player.velocity_y != 0:
+            self.apply_gravity()
+        self.handle_collisions()
+        
+        if self.bot and self.bot.pv > 0:
+            self.bot.behavior(self.player.rect, 765, 965)  # Appel à la méthode behavior avec les limites gauche et droite
+
+        self.group.update()
+        self.bot.update()  
+
+
+    def handle_input(self):
+        """Gère les entrées clavier"""
+        pressed = pygame.key.get_pressed()
+
+        if pressed[pygame.K_UP] and self.player.on_ground:  # Correction du saut
+            self.player.jump()
+        elif pressed[pygame.K_RIGHT]:
+            self.player.move_right()
+        elif pressed[pygame.K_LEFT]:
+            self.player.move_left()
+        if pressed[pygame.K_a]:
+            self.player.dash()
+
 
     def run(self):
-        """Boucle principale du jeu."""
-        while self.continuer:
-            self.handle_events()
+        """Boucle du jeu"""
+        running = True
+        clock = pygame.time.Clock()
 
-            if self.is_playing:
-                self.update_solo()
-                self.draw_solo()
-            else:
-                self.menu.draw()
+        while running:
+            delta_time = clock.tick(60)  # Temps écoulé en millisecondes
+            self.handle_input()
+            self.update(delta_time)
+            self.group.center(self.player.rect.center)
+            self.group.draw(self.screen)
+            self.bot.draw(self.screen)
 
-            pygame.display.update()
-            self.clock.tick(60)
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
         pygame.quit()
-        sys.exit()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    pygame.init()
     game = Game()
     game.run()
