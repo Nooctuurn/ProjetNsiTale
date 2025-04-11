@@ -8,10 +8,16 @@ sprites = {
         "dash": (pygame.image.load("Sprite/Ninja_Peasant/Dash.png"), 3),
     },
     "ninja_monk": {
-        "idle": (pygame.image.load("Sprite/Ninja_Monk/Idle.png"),7),
+        "idle": (pygame.image.load("Sprite/Ninja_Monk/Idle.png"), 7),
         "run": (pygame.image.load("Sprite/Ninja_Monk/Run.png"), 8),
         "jump": (pygame.image.load("Sprite/Ninja_Monk/Jump.png"), 9),
         "dash": (pygame.image.load("Sprite/Ninja_Monk/Attack_1.png"), 5),
+    },
+    "kunoichi": {
+        "idle": (pygame.image.load("Sprite/Kunoichi/Idle.png"), 9),
+        "run": (pygame.image.load("Sprite/Kunoichi/Run.png"), 8),
+        "jump": (pygame.image.load("Sprite/Kunoichi/Jump.png"), 10),
+        "dash": (pygame.image.load("Sprite/Kunoichi/Attack_1.png"), 6),
     },
 }
 
