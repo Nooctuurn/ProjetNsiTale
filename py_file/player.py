@@ -6,18 +6,21 @@ sprites = {
         "run": (pygame.image.load("Sprite/Ninja_Peasant/Run.png"), 6),
         "jump": (pygame.image.load("Sprite/Ninja_Peasant/Jump.png"), 8),
         "dash": (pygame.image.load("Sprite/Ninja_Peasant/Dash.png"), 3),
+        "attack": (pygame.image.load("Sprite/Ninja_Peasant/Attack_1.png"), 6),
     },
     "ninja_monk": {
         "idle": (pygame.image.load("Sprite/Ninja_Monk/Idle.png"), 7),
         "run": (pygame.image.load("Sprite/Ninja_Monk/Run.png"), 8),
         "jump": (pygame.image.load("Sprite/Ninja_Monk/Jump.png"), 9),
         "dash": (pygame.image.load("Sprite/Ninja_Monk/Attack_1.png"), 5),
+        "attack": (pygame.image.load("Sprite/Ninja_Monk/Attack_2.png"), 5),
     },
     "kunoichi": {
         "idle": (pygame.image.load("Sprite/Kunoichi/Idle.png"), 9),
         "run": (pygame.image.load("Sprite/Kunoichi/Run.png"), 8),
         "jump": (pygame.image.load("Sprite/Kunoichi/Jump.png"), 10),
         "dash": (pygame.image.load("Sprite/Kunoichi/Attack_1.png"), 6),
+        "attack": (pygame.image.load("Sprite/Kunoichi/Attack_2.png"), 8),
     },
 }
 
@@ -33,6 +36,7 @@ class Player(pygame.sprite.Sprite):
             "run": self.extract_frames(sprites[player_selected]["run"][0], sprites[player_selected]["run"][1]),
             "jump": self.extract_frames(sprites[player_selected]["jump"][0], sprites[player_selected]["jump"][1]),
             "dash": self.extract_frames(sprites[player_selected]["dash"][0], sprites[player_selected]["dash"][1]),
+            "attack": self.extract_frames(sprites[player_selected]["attack"][0], sprites[player_selected]["attack"][1]),  # Ajout des frames d'attaque
         }
         self.animation_frame = 0
         self.image = self.frames["idle"][self.animation_frame]
@@ -51,6 +55,12 @@ class Player(pygame.sprite.Sprite):
         self.is_jumping = False
         self.last_jump_time = 0
         self.jump_cooldown = 825  # en millisecondes
+
+        # Attaque
+        self.attack_damage = 10
+        self.is_attacking = False
+        self.attack_cooldown = 500  # Temps entre deux attaques
+        self.attack_start_time = 0
 
         # Dash
         self.is_dashing = False
@@ -105,6 +115,13 @@ class Player(pygame.sprite.Sprite):
             self.dash_start_time = now
             self.last_dash_time = now
 
+    def attack(self):
+        now = pygame.time.get_ticks()
+        if not self.is_attacking and now - self.attack_start_time > self.attack_cooldown:
+            self.is_attacking = True
+            self.attack_start_time = now
+            self.animation_frame = 0  # Réinitialise l'animation d'attaque
+
     def update(self):
         self.rect.topleft = self.position
         self.feet.midbottom = self.rect.midbottom
@@ -123,7 +140,10 @@ class Player(pygame.sprite.Sprite):
                 self.is_dashing = False
 
         # Choisir les frames et nom d'animation
-        if self.is_dashing:
+        if self.is_attacking:
+            current_frames = self.frames["attack"]
+            current_anim = "attack"
+        elif self.is_dashing:
             current_frames = self.frames["dash"]
             current_anim = "dash"
         elif self.is_jumping:
@@ -153,7 +173,9 @@ class Player(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.last_update_time > animation_speed:
             self.animation_frame += 1
             if self.animation_frame >= len(current_frames):
-                if current_anim == "jump":
+                if current_anim == "attack":
+                    self.is_attacking = False  # Fin de l'attaque
+                elif current_anim == "jump":
                     self.animation_frame = len(current_frames) - 1
                 else:
                     self.animation_frame = 0

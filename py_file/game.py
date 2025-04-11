@@ -98,7 +98,8 @@ class Game:
     def handle_input(self):
         """Gère les entrées clavier"""
         pressed = pygame.key.get_pressed()
-
+        if pressed[pygame.K_z]:
+            self.player.attack()
         if pressed[pygame.K_UP] and self.player.on_ground:  # Correction du saut
             self.player.jump()
         elif pressed[pygame.K_RIGHT]:
