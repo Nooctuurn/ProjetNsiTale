@@ -1,24 +1,35 @@
 import pygame
 
-# Chargement des sprites
-sprite_sheet_IDLE = pygame.image.load("Sprite/Ninja_Peasant/Idle.png")
-sprite_sheet_RUN = pygame.image.load("Sprite/Ninja_Peasant/Run.png")
-sprite_sheet_Jump = pygame.image.load("Sprite/Ninja_Peasant/Jump.png")
-sprite_sheet_Dash = pygame.image.load("Sprite/Ninja_Peasant/Dash.png")
+sprites = {
+    "ninja_peasent": {
+        "idle": (pygame.image.load("Sprite/Ninja_Peasant/Idle.png"), 6),
+        "run": (pygame.image.load("Sprite/Ninja_Peasant/Run.png"), 6),
+        "jump": (pygame.image.load("Sprite/Ninja_Peasant/Jump.png"), 8),
+        "dash": (pygame.image.load("Sprite/Ninja_Peasant/Dash.png"), 3),
+    },
+    "ninja_monk": {
+        "idle": (pygame.image.load("Sprite/Ninja_Monk/Idle.png"),7),
+        "run": (pygame.image.load("Sprite/Ninja_Monk/Run.png"), 8),
+        "jump": (pygame.image.load("Sprite/Ninja_Monk/Jump.png"), 9),
+        "dash": (pygame.image.load("Sprite/Ninja_Monk/Attack_1.png"), 5),
+    },
+}
 
+player_selected = str(input("choisir le personnage"))  # Choix du joueur, peut être "ninja_peasent" ou "ninja_monk"
 
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         super().__init__()
-        # Découpe des frames
-        self.IDLE_frame = self.extract_frames(sprite_sheet_IDLE, 6)
-        self.RUN_frame = self.extract_frames(sprite_sheet_RUN, 6)
-        self.Jump_frame = self.extract_frames(sprite_sheet_Jump, 8)
-        self.Dash_frame = self.extract_frames(sprite_sheet_Dash, 3)
-
+        # Découpe des frames pour chaque animation
+        self.frames = {
+            "idle": self.extract_frames(sprites[player_selected]["idle"][0], sprites[player_selected]["idle"][1]),
+            "run": self.extract_frames(sprites[player_selected]["run"][0], sprites[player_selected]["run"][1]),
+            "jump": self.extract_frames(sprites[player_selected]["jump"][0], sprites[player_selected]["jump"][1]),
+            "dash": self.extract_frames(sprites[player_selected]["dash"][0], sprites[player_selected]["dash"][1]),
+        }
         self.animation_frame = 0
-        self.image = self.IDLE_frame[self.animation_frame]
+        self.image = self.frames["idle"][self.animation_frame]
         self.rect = self.image.get_rect()
         self.position = pygame.Vector2(x, y)
         self.feet = pygame.Rect(0, 0, self.rect.width * 0.5, 12)
@@ -33,13 +44,11 @@ class Player(pygame.sprite.Sprite):
         # Flags de mouvement
         self.is_jumping = False
         self.last_jump_time = 0
-
-        #jump
         self.jump_cooldown = 825  # en millisecondes
 
         # Dash
         self.is_dashing = False
-        self.dash_speed = 12
+        self.dash_speed = 8
         self.dash_duration = 180
         self.dash_cooldown = 3000
         self.last_dash_time = 0
@@ -80,7 +89,6 @@ class Player(pygame.sprite.Sprite):
             self.is_jumping = True
             self.last_jump_time = now
 
-
     def end_jump(self):
         self.is_jumping = False
 
@@ -110,16 +118,16 @@ class Player(pygame.sprite.Sprite):
 
         # Choisir les frames et nom d'animation
         if self.is_dashing:
-            current_frames = self.Dash_frame
+            current_frames = self.frames["dash"]
             current_anim = "dash"
         elif self.is_jumping:
-            current_frames = self.Jump_frame
+            current_frames = self.frames["jump"]
             current_anim = "jump"
         elif self.is_moving:
-            current_frames = self.RUN_frame
+            current_frames = self.frames["run"]
             current_anim = "run"
         else:
-            current_frames = self.IDLE_frame
+            current_frames = self.frames["idle"]
             current_anim = "idle"
 
         # Reset animation si changement
@@ -134,13 +142,13 @@ class Player(pygame.sprite.Sprite):
             self.image = current_frames[self.animation_frame]
 
         # Vitesse de l’animation
-        animation_speed = 60 if current_anim == "dash" else (80 if self.is_moving else(120 if self.is_jumping else 120))
+        animation_speed = 60 if current_anim == "dash" else (80 if self.is_moving else (120 if self.is_jumping else 120))
 
         if pygame.time.get_ticks() - self.last_update_time > animation_speed:
             self.animation_frame += 1
             if self.animation_frame >= len(current_frames):
                 if current_anim == "jump":
-                    self.animation_frame = len(current_frames) -1
+                    self.animation_frame = len(current_frames) - 1
                 else:
                     self.animation_frame = 0
             self.last_update_time = pygame.time.get_ticks()
