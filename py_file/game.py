@@ -7,7 +7,18 @@ from perso_nj import Bot
 pygame.init()
 
 class Game:
-    def __init__(self):
+    def __init__(self, ecran, largeur, hauteur, brightness=1.0):
+        self.ecran = ecran
+        self.largeur = largeur
+        self.hauteur = hauteur
+        self.brightness = brightness  # Stocke la luminosité
+        self.is_playing = False
+        self.clock = pygame.time.Clock()
+        self.icon = pygame.image.load('img/iconne.webp')
+        pygame.display.set_icon(self.icon)
+
+
+        pygame.display.set_caption("platformer - smash odyssey")
         # Fenêtre de jeu
         self.screen = pygame.display.set_mode((1200,600))
         pygame.display.set_caption("platformer - smash odyssey")
@@ -114,6 +125,8 @@ class Game:
         """Boucle du jeu"""
         running = True
         clock = pygame.time.Clock()
+        brightness_surface = pygame.Surface((self.largeur, self.hauteur))
+        brightness_surface.fill((0, 0, 0))
 
         while running:
             delta_time = clock.tick(60)  # Temps écoulé en millisecondes
@@ -123,6 +136,10 @@ class Game:
             self.group.draw(self.screen)
             self.bot.draw(self.screen)
 
+            # Appliquer la luminosité
+            brightness_surface.set_alpha(int((1 - self.brightness) * 255))
+            self.ecran.blit(brightness_surface, (0, 0))
+
             pygame.display.flip()
 
             for event in pygame.event.get():
@@ -131,7 +148,9 @@ class Game:
 
         pygame.quit()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pygame.init()
+
+    # Créer une instance de Game
     game = Game()
     game.run()
